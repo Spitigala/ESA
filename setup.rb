@@ -2,7 +2,7 @@ require 'faker'
 require 'sqlite3'
 
 
-`rm suggest.db`
+`rm destination_suggester.db`
 
 model = SQLite3::Database.new "destination_suggester.db"
 model.execute("PRAGMA foreign_keys = ON;")
