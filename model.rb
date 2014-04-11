@@ -1,79 +1,8 @@
-class Users
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-  
-  def self.return_all
-  end
-  
-end
-
-class Places
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class Ratings
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class VisitLogs
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class Compare
-  def initialize
-  end
-
-  def c
-    
-end
-end
-
 #'setup.rb'
 
 require 'sqlite3'
 
-$db = SQLite3::Database.new "database.db"
-
-variable = hello
+$db = SQLite3::Database.open "suggest.db"
 
 
 class Users
@@ -87,50 +16,43 @@ class Users
     end
   end
 
-
-  def self.add_user(*args)
-    username = args[:username]
-    location = args[:location]
-     # add username only if it doesn't exist already
-    $db.execute(
-      "INSERT INTO users(username, location)
-      VALUES(\"#{username}\",\"#{location}\"")
+  def self.add_user(args)
+    add_user_prepared = $db.prepare("INSERT INTO users (username, location)
+                                     VALUES(:username,:location)")
+    add_user_prepared.execute(args)
   end
 
-  def self.delete_user(*args)
-    username = args[:username]
-    $db.execute(
-    "DELETE FROM users
-    WHERE username = \"#{username}\"")
+  def self.get_user(args)
+    user_to_return = {}
+    check_user = $db.prepare("SELECT username, location
+                               FROM users
+                               WHERE username = :username")
+    match = check_user.execute(args)
+    match.to_a.each { | username, location | user_to_return = { username: username, location: location}}
+    user_to_return
   end
 
-  def self.update_user(*args)
+  def self.delete_user(args)
+    delete = $db.prepare("DELETE FROM users
+                          WHERE username = :username")
+    delete.execute(args)
+  end
+
+  def self.update_user(args)
     #### WE CANNOT UPDATE A USER NAME UNLESS THE USER NAME IS UNIQUE
-    username = args[:username]
-    location = args[:location]
-    new_username = args[:new_username]
-    new_location = args[:new_location]
+    #### ***************************************************************
+    #### That's not the model's job. Check else where with Users.get_user(:username)
+    #### ***************************************************************
 
-    ## to make sure a username is suplicated, we have to go in to the DB, pull up
-    ## all the usernames, check to see if the new name matches a record already
-    ## in the DB, and if so, raise an error. So first, we have to ask the user to
-    ## input their current user name.
-    # username_list=[]
-    # $db.execute( "select username from users" ) do |username|
-    #   username_list << username
-    # end
-    # username_list.include?(new_username)
-
-username_list
-
-    $db.execute(
-      "UPDATE users
-      SET username=\"#{new_username}\",location=\"#{new_location}\"
-      WHERE username = \"#{username}\" AND location = \"#{location}\"")
+    update = $db.prepare("UPDATE users
+                          SET username = :new_username,
+                          location= :new_location,
+                          WHERE username = :username")
+    update.execute(args)
   end
 end
 
-class Publishers
+class Visited_places
   def self.display_books_published_at#(publisher)
     #@first_name = publisher
     $db.execute(
@@ -141,6 +63,16 @@ class Publishers
   end
 
 end
+
+class Places
+end
+
+class Catagories
+end
+
+class Ratings
+end
+
 
 
 class Database
@@ -167,88 +99,7 @@ class Database
   end
 end
 
-#test = Authors.new
-#Authors.add_author("Shaun","coolest")
-# Authors.display_table
-#Authors.display_table
-# Authors.delete_author("Shaun","coolest")
-# #Authors.delete_author("@new_first","@new_last")
-# #Authors.display_table
-# #Authors.update_author("Shaun","coolest","Insung","not coolest")
-# Authors.delete_author("Insung","not coolest")
-# Authors.delete_author("Insung","not coolest")
-# Authors.display_table
-
-Database.display_all_tables
-p Publishers.display_books_published_at
-
-
-# class Books
-#   def initialize
-#     puts "-----------"
-#     puts "Books:"
-#     $db.execute( "select * from books" ) do |row|
-#     p row
-#     end
-#   end
-
-#   def add_author
-      # $db.execute(
-      #   "INSERT INTO books(author_id, book_id)
-      #   VALUES(#{[*1..10].sample}, #{i} )")
-#   end
-
-#   def delete_author
-
-#   end
-
-#   def update_author
-
-#   end
-# end
-
-# class Publishers
-#   def initialize
-#     puts "Publishers:"
-#     $db.execute( "select * from publishers" ) do |row|
-#     p row
-#     end
-#   end
-
-#   def add_author
-      # $db.execute(
-      #   "INSERT INTO publishers(author_id, book_id)
-      #   VALUES(#{[*1..10].sample}, #{i} )")
-#   end
-
-#   def delete_author
-
-#   end
-
-#   def update_author
-
-#   end
-# end
-
-#  # Find a few rows
-#  puts "Authors:"
-# db.execute( "select * from authors" ) do |row|
-#    p row
-# end
-# puts "-----------"
-# puts "Books:"
-# db.execute( "select * from books" ) do |row|
-#    p row
-# end
-# puts "---------------"
-# puts "Publishers:"
-# db.execute( "select * from publishers" ) do |row|
-#    p row
-# end
-# puts "---------------"
-# puts "Books and Authors"
-# db.execute( "select * from authors_books" ) do |row|
-#    p row
-# end
-
-
+Users.add_user(username: "Johnathan", location:"DBCNYC")
+p Users.get_user(username: "Johnathan")
+Users.delete_user(username: "Johnathan")
+p Users.get_user(username: "Johnathan")
