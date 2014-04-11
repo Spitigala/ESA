@@ -52,7 +52,7 @@ class Users
     # end
     # username_list.include?(new_username)
 
-
+username_list
 
     $db.execute(
       "UPDATE users
