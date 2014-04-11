@@ -1,11 +1,11 @@
 class Interface
   def initialize
   end
-
+  
   def who_are_you(name)
   end
 
-  def list_options
+  def menu_options
   end
 
   def your_list_of_places
