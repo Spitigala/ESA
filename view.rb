@@ -21,6 +21,7 @@ class Interface
       puts "Show all places with: show all"
     end
     puts "Exit by typing: exit"
+    choice = prompt_user("What would you like to do?:")
   end
 
   def your_list_of_places
