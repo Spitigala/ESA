@@ -5,7 +5,13 @@ class Interface
   def who_are_you(name)
   end
 
+  def list_options
+  end
+
   def your_list_of_places
+  end
+
+  def prompt_user(message)
   end
 
   def add_place(place)
@@ -25,4 +31,5 @@ class Interface
 
   def delete_place(place)
   end
+
 end
