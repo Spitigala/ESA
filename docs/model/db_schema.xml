@@ -97,7 +97,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="374" y="330" name="visit_queue">
+<table x="374" y="330" name="places_to_visit">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
