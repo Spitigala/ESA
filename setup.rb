@@ -4,10 +4,10 @@ require 'sqlite3'
 
 `rm suggest.db`
 
-suggest = SQLite3::Database.new "suggest.db"
-suggest.execute("PRAGMA foreign_keys = ON;")
+model = SQLite3::Database.new "destination_suggester.db"
+model.execute("PRAGMA foreign_keys = ON;")
 
-rows = suggest.execute <<-SQL
+rows = model.execute <<-SQL
   CREATE TABLE users (
      id INTEGER PRIMARY KEY AUTOINCREMENT,
      username VARCHAR(30),
@@ -15,7 +15,7 @@ rows = suggest.execute <<-SQL
     );
 SQL
 
-suggest.execute <<-SQL
+model.execute <<-SQL
   CREATE TABLE ratings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     place_id INTEGER,
@@ -27,7 +27,7 @@ suggest.execute <<-SQL
     );
 SQL
 
-suggest.execute <<-SQL
+model.execute <<-SQL
   CREATE TABLE visits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -37,7 +37,7 @@ suggest.execute <<-SQL
     );
 SQL
 
-suggest.execute <<-SQL
+model.execute <<-SQL
   CREATE TABLE places (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(30),
@@ -47,7 +47,7 @@ suggest.execute <<-SQL
     );
 SQL
 
-suggest.execute <<-SQL
+model.execute <<-SQL
   CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     category_name VARCHAR(30)
