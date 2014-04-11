@@ -16,7 +16,7 @@ rows = model.execute <<-SQL
 SQL
 
 model.execute <<-SQL
-  CREATE TABLE ratings (
+  CREATE TABLE visit_ratings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     place_id INTEGER,
     user_id INTEGER,
@@ -28,7 +28,7 @@ model.execute <<-SQL
 SQL
 
 model.execute <<-SQL
-  CREATE TABLE visits (
+  CREATE TABLE places_to_visit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     place_id INTEGER,
@@ -48,7 +48,7 @@ model.execute <<-SQL
 SQL
 
 model.execute <<-SQL
-  CREATE TABLE categories (
+  CREATE TABLE place_categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     category_name VARCHAR(30)
     );
