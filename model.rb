@@ -10,6 +10,10 @@ class Users
 
   def self.delete
   end
+  
+  def self.return_all
+  end
+  
 end
 
 class Places
