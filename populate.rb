@@ -15,30 +15,17 @@ def populate_users(people_count)
   end #times
 end #populate_authors
 
-def populate_places(location_count)
-  db = SQLite3::Database.new "destination_suggester.db"
-  location_count.times do
-    randcat = rand(3)
-    sql_insert = "INSERT INTO places
-                  ( name,
-                  address,
-                  category_id)
-                VALUES
-                  ('#{Faker::Company.name}',
-                  ('NYC',
-                  '#{randcat}');"
-    #puts sql_insert
-    db.execute (sql_insert)
-  end #
-end
+
 
 def populate_categories
   db = SQLite3::Database.new "destination_suggester.db"
-  sql_insert = "INSERT INTO place_categories 
+  category_list = %w[ Bars Clubs Restaurants]
+  sql_insert = "INSERT INTO place_categories
                   ( category_name )
                 VALUES
-                  ( )
-
+                  ( #{rand(4)} );"
+  category_list.each do |category|
+   db.execute("insert into place_categories(category_name) values ('#{category}');")
 
 sql_create_authors = "CREATE TABLE 'authors' (
                       'id' INTEGER PRIMARY KEY NOT NULL,
