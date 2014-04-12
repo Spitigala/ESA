@@ -14,13 +14,13 @@ class Users
     end
   end
 
-  def self.add_user(args)
+  def self.add_user(args) # {id: 0, username: "Johnathan", location: "DBC NYC"}
     add_user_prepared = $db.prepare("INSERT INTO users (id, username, location)
-                                     VALUES(:id, :username,:location)")
+                                     VALUES(:id, :username, :location)")
     add_user_prepared.execute(args)
   end
 
-  def self.get_user(args)
+  def self.get_user(args) # {username: "Johnathan"}
     user_to_return = {}
     check_user = $db.prepare("SELECT id, username, location
                                FROM users
@@ -30,13 +30,13 @@ class Users
     user_to_return
   end
 
-  def self.delete_user(args)
+  def self.delete_user(args) # {username: "Johnathan"}
     delete = $db.prepare("DELETE FROM users
                           WHERE username = :username")
     delete.execute(args)
   end
 
-  def self.update_user(args)
+  def self.update_user(args) # {new_username: "Johnathanw", username: "Johnathan", new_location: "DBC SF"}
     update = $db.prepare("UPDATE users
                           SET username = :new_username,
                           location= :new_location,
