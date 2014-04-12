@@ -58,7 +58,6 @@ def populate_ratings
   user_list = db.execute("SELECT id FROM users")
   place_list.each do |place|
     myplace, myuser = place[0], user_list[0].sample #insert 1 vote per place, random user/rating
-    #puts "1. place: #{myplace}, user: #{myuser[0]} rand: #{rand(5)}"
      query = ("INSERT INTO visit_ratings
                  (place_id,
                    user_id,
@@ -71,8 +70,6 @@ def populate_ratings
                  #{rand(5)});")
       db.execute(query)
       myplace, myuser = place_list[0].sample, user_list[0].sample
-    #puts "2. place: #{myplace[0]}, user: #{myuser[0]}"
-    puts query
       db.execute(query)
     end
 end
