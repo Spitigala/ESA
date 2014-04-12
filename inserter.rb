@@ -2,15 +2,27 @@ require 'oauth'
 require 'json'
 require 'sqlite3'
 require 'faker'
+require 'open-uri'
 #Globals
 $db = SQLite3::Database.open "suggest.db"
 
 #Yelp Setup
 
+def get_google_places
+  places_key = "AIzaSyCJ3E7eEVg63hGSyKwdo8vr_-SUt_ySpLA"
+  dbc_longlat = "40.7061,-74.0089"
+  places_query = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{dbc_longlat}&radius=2000&types=food&sensor=false&key=#{places_key}"
+  uri = URI.parse(places_query)
+  json = uri.open.read
+  parsed_json = JSON.parse(json)
+  puts parsed_json["results"][0]["name"]
+  parsed_json["results"].each do |place|
+  puts place["name"], place["vicinity"]
+end
+end
 
 
 def populate_places
-  use_yelp = true
   consumer_key = 'kzajzRzpzOhkCl3LqsRgYQ'
   consumer_secret = 'SvKIsxzNtBmayayso7nsYawc_JU'
   token = 'UOlP_2aX5W3gZdIl32sPeAKMlLEo6Y8o'
@@ -89,3 +101,4 @@ populate_categories
 populate_people(200)
 populate_ratings
 populate_places_to_visit
+#get_google_places
