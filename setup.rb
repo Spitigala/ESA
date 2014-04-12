@@ -5,7 +5,6 @@ require 'sqlite3'
 `rm destination_suggester.db`
 
 model = SQLite3::Database.new "destination_suggester.db"
-model.execute("PRAGMA foreign_keys = ON;")
 
 rows = model.execute <<-SQL
   CREATE TABLE users (
@@ -21,9 +20,7 @@ model.execute <<-SQL
     place_id INTEGER,
     user_id INTEGER,
     visited_on TIMESTAMP,
-    rating INTEGER(2) NOT NULL,
-    FOREIGN KEY(place_id) REFERENCES places(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    rating INTEGER(2) NOT NULL
     );
 SQL
 
@@ -31,9 +28,7 @@ model.execute <<-SQL
   CREATE TABLE places_to_visit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
-    place_id INTEGER,
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(place_id) REFERENCES places(id)
+    place_id INTEGER
     );
 SQL
 
@@ -42,8 +37,7 @@ model.execute <<-SQL
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(30),
     address VARCHAR(30),
-    category_id INTEGER,
-    FOREIGN KEY(category_id) REFERENCES categories(id)
+    category_id INTEGER
     );
 SQL
 
