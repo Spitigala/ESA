@@ -11,15 +11,28 @@ class Controller
 
   def self.authenticate(sign_in)
     if sign_in.match(/new/)
-      #if Model.get_username(username)==nil
-        #Model.add_user(username)
-      #else
-        #Interface.error
-        #Interface.prompt_user
-      #end
+      puts "make this do something"
+      # if Model.get_username(username)==nil
+      #   Model.add_user(username)
+      # else
+      #   Controller.authenticate(Interface.user_error)
+      # end
+    elsif sign_in.match(/login/)
+      Interface.sign_in_error unless Controller.verify_credentials(Interface.ask_for_credentials)
+    else
+      Interface.error
+      Interface.who_are_you
     end
     Interface.menu_options
   end
+
+  def self.verify_credentials(credentials)
+    return true
+    ##Interface.username == something
+  end
+
+
+
 
   def self.menu_choice(choice)
     case choice
@@ -30,13 +43,38 @@ class Controller
         Interface.rate_place
         #Model.rate_place(Interface.rate_place)
       when /suggest/i
-        Interface.suggest_place
-        #Model.rate_place(Interface.suggest.place)
+        #new_place = (Model.get_place_i_havent_been_to).sample
+        #Interface.suggest_place(new_place)
       when /show all/i
-        puts "show"
-        ##add show feature
-      when /exit/i
-        return
+        Interface.display_table
+        #Interface.display_table(Model.show_all_places) ############
+      when /my list/i
+        Interface.display_table
+        #Interface.display_table(Model.show_my_places)
+      when /dance/i
+        counter = 0
+        while counter < 20
+          puts " / 0 /"
+          puts "   |  PUMP UP THE JAM"
+          puts "  / \\"
+          puts "  |  | "
+          sleep(0.2)
+          system("tput bel")
+          system("clear")
+          puts " \\ 0 \\"
+          puts "   |  PUMP UP THE JAM"
+          puts "  / \\"
+          puts " /  | "
+          sleep(0.2)
+          system("tput bel")
+          system("clear")
+          counter += 1
+        end
+      when /visited/i
+        Interface.display_table
+       # Interface.display_table(Model.show_visited)
+      when
+        Interface.error
     end
 
   end
