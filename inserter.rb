@@ -48,7 +48,6 @@ def  populate_people(people_count)
                 VALUES
                   ('#{Faker::Name.first_name}',
                    'NYC');"
-
   db.execute (sql_insert)
   end #times
 end #populate_people
@@ -57,7 +56,7 @@ def populate_ratings
   place_list = db.execute("SELECT id FROM places")
   user_list = db.execute("SELECT id FROM users")
   place_list.each do |place|
-    myplace, myuser = place[0], user_list[0].sample #insert 1 vote per place, random user/rating
+    myplace, myuser = place[0], user_list.sample[0] #insert 1 vote per place, random user/rating
      query = ("INSERT INTO visit_ratings
                  (place_id,
                    user_id,
@@ -69,7 +68,7 @@ def populate_ratings
                  CURRENT_TIMESTAMP,
                  #{rand(5)});")
       db.execute(query)
-      myplace, myuser = place_list[0].sample, user_list[0].sample
+      myplace, myuser = place_list.sample[0], user_list.sample[0]
       db.execute(query)
     end
 end
