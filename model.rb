@@ -1,84 +1,11 @@
-class Users
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-  
-  def self.return_all
-  end
-  
-end
-
-class Places
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class Ratings
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class VisitLogs
-  def self.add
-  end
-
-  def self.read
-  end
-
-  def self.update
-  end
-
-  def self.delete
-  end
-end
-
-class Compare
-  def initialize
-  end
-
-  def c
-    
-end
-end
-
 #'setup.rb'
 
 require 'sqlite3'
 
-$db = SQLite3::Database.new "database.db"
-
-variable = hello
+$db = SQLite3::Database.open "suggest.db"
 
 
 class Users
-  def initialize
-  end
 
   def self.display_table
     puts "Users:"
@@ -87,50 +14,38 @@ class Users
     end
   end
 
-
-  def self.add_user(*args)
-    username = args[:username]
-    location = args[:location]
-     # add username only if it doesn't exist already
-    $db.execute(
-      "INSERT INTO users(username, location)
-      VALUES(\"#{username}\",\"#{location}\"")
+  def self.add_user(args) # {id: 0, username: "Johnathan", location: "DBC NYC"}
+    add_user_prepared = $db.prepare("INSERT INTO users (id, username, location)
+                                     VALUES(:id, :username, :location)")
+    add_user_prepared.execute(args)
   end
 
-  def self.delete_user(*args)
-    username = args[:username]
-    $db.execute(
-    "DELETE FROM users
-    WHERE username = \"#{username}\"")
+  def self.get_user(args) # {username: "Johnathan"}
+    user_to_return = {}
+    check_user = $db.prepare("SELECT id, username, location
+                               FROM users
+                               WHERE username = :username")
+    match = check_user.execute(args)
+    match.to_a.each { | id, username, location | user_to_return = { id: id, username: username, location: location}}
+    user_to_return
   end
 
-  def self.update_user(*args)
-    #### WE CANNOT UPDATE A USER NAME UNLESS THE USER NAME IS UNIQUE
-    username = args[:username]
-    location = args[:location]
-    new_username = args[:new_username]
-    new_location = args[:new_location]
+  def self.delete_user(args) # {username: "Johnathan"}
+    delete = $db.prepare("DELETE FROM users
+                          WHERE username = :username")
+    delete.execute(args)
+  end
 
-    ## to make sure a username is suplicated, we have to go in to the DB, pull up
-    ## all the usernames, check to see if the new name matches a record already
-    ## in the DB, and if so, raise an error. So first, we have to ask the user to
-    ## input their current user name.
-    # username_list=[]
-    # $db.execute( "select username from users" ) do |username|
-    #   username_list << username
-    # end
-    # username_list.include?(new_username)
-
-username_list
-
-    $db.execute(
-      "UPDATE users
-      SET username=\"#{new_username}\",location=\"#{new_location}\"
-      WHERE username = \"#{username}\" AND location = \"#{location}\"")
+  def self.update_user(args) # {new_username: "Johnathanw", username: "Johnathan", new_location: "DBC SF"}
+    update = $db.prepare("UPDATE users
+                          SET username = :new_username,
+                          location= :new_location,
+                          WHERE username = :username")
+    update.execute(args)
   end
 end
 
-class Publishers
+class PlacesToVisit
   def self.display_books_published_at#(publisher)
     #@first_name = publisher
     $db.execute(
@@ -142,113 +57,152 @@ class Publishers
 
 end
 
+# SQL statements we need:
+# return/show all restaurants that a user wants to go to (added to "places to go")
+# return/show all restaurants that a user has been to
+# return/show all restaurants (regardless of status) of a user
+
+
+class Places
+  def self.display_table
+    puts "Places:"
+    $db.execute( "select * from users" ) do |row|
+    p row
+    end
+  end
+
+  def self.add_place(args)
+    add_place_prepared = $db.prepare( "INSERT INTO places ( id, name, address, catagory_id)
+                                       VALUES(:id, :name, :address, :catagory_id )")
+    add_place_prepared.execute(args)
+  end
+
+  # def self.get_place(args)
+  #   place_to_return = {}
+  #   check_place = $db.prepare( "SELECT id, name, address
+  #                               FROM places
+  #                               WHERE name = :username
+  #                               OR")
+  #   match = check_user.execute(args)
+  #   match.to_a.each { | id, username, location | user_to_return = { id: id, username: username, location: location}}
+  #   user_to_return
+  # end
+
+  def self.delete_place(args)
+    delete = $db.prepare("DELETE FROM places
+                          WHERE name = :name")
+    delete.execute(args)
+  end
+
+  def self.update_place(args)
+    update = $db.prepare("UPDATE places
+                          SET name = :name,
+                          address = :address,
+                          WHERE name = :new_name 
+                          AND address = :address")
+    update.execute(args)
+  end
+
+end
+
+class PlaceCategories
+  def self.display_table
+    puts "PlaceCatagories:"
+    $db.execute( "select * from place_categories" ) do |row|
+    p row
+    end
+  end
+
+  def self.add_place_category(args)
+    add_place_prepared = $db.prepare("INSERT INTO place_categories (id, company_name)
+                                     VALUES(:id,:company_name)")
+    add_place_prepared.execute(args)
+  end
+
+  def self.delete_place_catagory(args)
+    delete = $db.prepare("DELETE FROM place_categories
+                          WHERE category_name = :category_name")
+    delete.execute(args)
+  end
+
+end
+
+class VisitRatings
+  def self.display_table
+    puts "Users:"
+    $db.execute( "select * from users" ) do |row|
+    p row
+    end
+  end
+
+  def self.add_user(args)
+    add_user_prepared = $db.prepare("INSERT INTO users (username, location)
+                                     VALUES(:username,:location)")
+    add_user_prepared.execute(args)
+  end
+
+  def self.get_user(args)
+    user_to_return = {}
+    check_user = $db.prepare("SELECT username, location
+                               FROM users
+                               WHERE username = :username")
+    match = check_user.execute(args)
+    match.to_a.each { | username, location | user_to_return = { username: username, location: location}}
+    user_to_return
+  end
+
+  def self.delete_user(args)
+    delete = $db.prepare("DELETE FROM users
+                          WHERE username = :username")
+    delete.execute(args)
+  end
+
+  def self.update_user(args)
+    #### WE CANNOT UPDATE A USER NAME UNLESS THE USER NAME IS UNIQUE
+    #### ***************************************************************
+    #### That's not the model's job. Check else where with Users.get_user(:username)
+    #### ***************************************************************
+
+    update = $db.prepare("UPDATE users
+                          SET username = :new_username,
+                          location= :new_location,
+                          WHERE username = :username")
+    update.execute(args)
+  end
+end
+
+
 
 class Database
   def self.display_all_tables
-    puts "Authors:"
-    $db.execute( "select * from authors" ) do |row|
+    puts "Users:"
+    $db.execute( "select * from users" ) do |row|
        p row
     end
     puts "-----------"
-    puts "Books:"
-    $db.execute( "select * from books" ) do |row|
+    puts "Visit_ratings:"
+    $db.execute( "select * from visit_ratings" ) do |row|
        p row
     end
     puts "---------------"
-    puts "Publishers:"
-    $db.execute( "select * from publishers" ) do |row|
+    puts "Places:"
+    $db.execute( "select * from places" ) do |row|
        p row
     end
     puts "---------------"
-    puts "Books and Authors"
-    $db.execute( "select * from authors_books" ) do |row|
+    puts "Place categories"
+    $db.execute( "select * from place_categories" ) do |row|
+       p row
+    end
+    puts "---------------"
+    puts "Places to visit"
+    $db.execute( "select * from places_to_visit" ) do |row|
        p row
     end
   end
 end
 
-#test = Authors.new
-#Authors.add_author("Shaun","coolest")
-# Authors.display_table
-#Authors.display_table
-# Authors.delete_author("Shaun","coolest")
-# #Authors.delete_author("@new_first","@new_last")
-# #Authors.display_table
-# #Authors.update_author("Shaun","coolest","Insung","not coolest")
-# Authors.delete_author("Insung","not coolest")
-# Authors.delete_author("Insung","not coolest")
-# Authors.display_table
-
-Database.display_all_tables
-p Publishers.display_books_published_at
-
-
-# class Books
-#   def initialize
-#     puts "-----------"
-#     puts "Books:"
-#     $db.execute( "select * from books" ) do |row|
-#     p row
-#     end
-#   end
-
-#   def add_author
-      # $db.execute(
-      #   "INSERT INTO books(author_id, book_id)
-      #   VALUES(#{[*1..10].sample}, #{i} )")
-#   end
-
-#   def delete_author
-
-#   end
-
-#   def update_author
-
-#   end
-# end
-
-# class Publishers
-#   def initialize
-#     puts "Publishers:"
-#     $db.execute( "select * from publishers" ) do |row|
-#     p row
-#     end
-#   end
-
-#   def add_author
-      # $db.execute(
-      #   "INSERT INTO publishers(author_id, book_id)
-      #   VALUES(#{[*1..10].sample}, #{i} )")
-#   end
-
-#   def delete_author
-
-#   end
-
-#   def update_author
-
-#   end
-# end
-
-#  # Find a few rows
-#  puts "Authors:"
-# db.execute( "select * from authors" ) do |row|
-#    p row
-# end
-# puts "-----------"
-# puts "Books:"
-# db.execute( "select * from books" ) do |row|
-#    p row
-# end
-# puts "---------------"
-# puts "Publishers:"
-# db.execute( "select * from publishers" ) do |row|
-#    p row
-# end
-# puts "---------------"
-# puts "Books and Authors"
-# db.execute( "select * from authors_books" ) do |row|
-#    p row
-# end
-
-
+Users.add_user(username: "Johnathan", location:"DBCNYC")
+p Users.get_user(username: "Johnathan")
+Users.delete_user(username: "Johnathan")
+p Users.get_user(username: "Johnathan")
