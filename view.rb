@@ -4,7 +4,6 @@
 class Interface    ###Display
   attr_reader :username, :password
   def initialize
-    #@running = true
 
   end
 
@@ -18,7 +17,14 @@ class Interface    ###Display
 
   def self.ask_for_credentials
     @username = Interface.prompt_user("Please enter your username:")
-    @password = Interface.prompt_user("Please enter your password:")
+    #@password = Interface.prompt_user("Please enter your password:")
+  end
+
+  def self.ask_for_new_credentials
+    @username = Interface.prompt_user("Please enter your desired username:")
+    @location = Interface.prompt_user("Please enter your current location:")
+    credentials = [@username,@location]
+    #@password = Interface.prompt_user("Please enter your password:")
   end
 
   def self.prompt_user(message)
@@ -26,7 +32,7 @@ class Interface    ###Display
     input = gets.chomp
   end
 
-  def self.menu_options#(menu_type)
+  def self.menu_options
     puts "\n"
     puts "Here are your options #{@username}:"
     puts "Add a new place to my own list: new"
@@ -45,21 +51,13 @@ class Interface    ###Display
     Interface.menu_options
   end
 
-  # def your_list_of_places
-
-  # end
-
-  # def prompt_user(message)
-  #   puts "#{message}"
-  #   input = gets.chomp
-  # end
 
   def self.add_place
     puts "\n"
     name = prompt_user("Please input the name of the location:")
     address = prompt_user("Please enter the address of the location:")
-    genre = prompt_user("What kind of place is this (please enter 1-3)?\n1. Bar\n2 .Restaurant\n3. Club")
-    {name: name, address: address, genre: genre}
+    category_id = prompt_user("What kind of place is this (please enter 1-3)?\n1. Bar\n2 .Restaurant\n3. Club")
+    {name: name, address: address, category_id: category_id}
   end
 
   def self.rate_place
@@ -79,8 +77,8 @@ class Interface    ###Display
 
   def self.display_table(*args)
     puts "\n"
-    puts "print table here"
-    #args.each{ |item| puts item}
+    #p args
+    args.each{ |item| puts item}
   end
 
   def self.end_app
@@ -90,18 +88,25 @@ class Interface    ###Display
   end
 
   def self.user_error
-    puts "I'm sorry, there seemed to a user with that username and/or password."
-    prompt_user("Please try again.")
+    puts "I'm sorry, there seemed to a user with that username."
+    Interface.ask_for_new_credentials
+  end
+
+  def self.place_error
+    puts "I'm sorry, I don't believe that place is in our database."
+    puts "You will have to enter it as a new place."
+    Interface.menu_options
   end
 
   def self.sign_in_error
     puts "I'm sorry, there seemed to a problem with that username and/or password."
-    prompt_user("Please try again.")
+    Interface.ask_for_credentials
+    #prompt_user("Please try again.")
   end
 
   def self.error
     puts "\n"
-    puts "I'm sorry, there seemed to a problem with that input."
+    puts "I'm sorry, there seemed to be a problem with that input."
     puts "\n"
     #Interface.menu_options
   end

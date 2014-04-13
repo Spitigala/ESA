@@ -93,9 +93,9 @@ class Places
   def self.display_table
     places_to_return = []
     $db.execute( "select * from Places" ) do |id, name, address, category_id|
-      place_to_return << {id: id, name: name, address: address, category_id: category_id}
+      places_to_return << {id: id, name: name, address: address, category_id: category_id}
     end
-    place_to_return
+    places_to_return
   end
 
   def self.add_place(args)
@@ -113,7 +113,7 @@ class Places
                                 WHERE name = :name
                                 OR address = :address")
     match = check_place.execute(args)
-    match.to_a.each { | id, username, location | place_to_return = { id: id, username: username, location: location}}
+    match.to_a.each { | id, name, address | place_to_return = { id: id, name: name, address: address}}
     place_to_return
   end
 
@@ -152,7 +152,7 @@ end
 
 class VisitRatings
   def self.display_table
-    ratings_to_return = []
+    ratings_to_return=[]
     $db.execute( "select * from visit_ratings" ) do |id, place_id, user_id, visited_on, rating|
       ratings_to_return << {id: id, place_id: place_id, user_id: user_id, visited_on: visited_on, rating: rating}
     end

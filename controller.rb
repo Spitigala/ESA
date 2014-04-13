@@ -1,7 +1,10 @@
 require_relative 'view.rb'
+require_relative 'model.rb'
 
 class Controller
   def initialize
+    @time = Time.new
+    p @time.strftime("%Y-%m-%d %H:%M:%S")
     control_flow
   end
 
@@ -11,14 +14,11 @@ class Controller
 
   def self.authenticate(sign_in)
     if sign_in.match(/new/)
-      puts "make this do something"
-      # if Model.get_username(username)==nil
-      #   Model.add_user(username)
-      # else
-      #   Controller.authenticate(Interface.user_error)
-      # end
+      @username, @location = Interface.ask_for_new_credentials
+      Controller.username_already_exists?({username: @username})
     elsif sign_in.match(/login/)
-      Interface.sign_in_error unless Controller.verify_credentials(Interface.ask_for_credentials)
+      @username = Interface.ask_for_credentials
+      Controller.verify_user({username: @username})
     else
       Interface.error
       Interface.who_are_you
@@ -26,31 +26,69 @@ class Controller
     Interface.menu_options
   end
 
+
+  def self.username_already_exists?(user_info)
+    if Users.get_user(user_info[:username]).empty?
+      Users.add_user(user_info)
+    else
+      @username, @location = Interface.user_error
+      Controller.username_already_exists?({username: @username, location: @location})
+    end
+  end
+
+  def self.verify_user(user_info)
+    if Users.get_user(user_info[:username]).empty?
+      @username = Interface.sign_in_error
+      Controller.verify_user({username: @username})
+    end
+    @username
+  end
+
   def self.verify_credentials(credentials)
+    @username, @location = credentials
     return true
     ##Interface.username == something
   end
 
-
+  def self.verify_place(args)
+    p args[:name]
+    if (Places.get_place(args[:name])).empty?
+      Interface.place_error
+    else
+      true
+    end
+  end
 
 
   def self.menu_choice(choice)
     case choice
       when /new/i
-        Interface.add_place
-        #Model.add_place(Interface.add_place)
+        Places.add_place(Interface.add_place)
       when /rate/i
-        Interface.rate_place
-        #Model.rate_place(Interface.rate_place)
-      when /suggest/i
-        #new_place = (Model.get_place_i_havent_been_to).sample
-        #Interface.suggest_place(new_place)
+        p rating_info = Interface.rate_place
+        user_id  = Users.get_user({username: @username})
+        place_info = Places.get_place(rating_info[:name])
+        p place_info
+        Controller.verify_place(place_info)
+        place_id = place_info[:id]
+        rating_hash = {user_id: user_id[:id], place_id: place_id, visited_on: (Time.new.strftime("%Y-%m-%d %H:%M:%S")), rating: rating_info[:rating]}
+        p rating_hash
+        VisitRatings.rate_place(rating_hash)
+      when /show ratings/
+        Interface.display_table(VisitRatings.display_table)
       when /show all/i
-        Interface.display_table
-        #Interface.display_table(Model.show_all_places) ############
+        Interface.display_table(Places.display_table)
       when /my list/i
         Interface.display_table
         #Interface.display_table(Model.show_my_places)
+      when /suggest/i
+        #new_place = (Model.get_place_i_havent_been_to).sample
+        #Interface.suggest_place(new_place)
+      when /show_all_users/
+        Interface.display_table(Users.display_table)
+      when /delete_user/
+        Users.delete_user({username: @username})
+        Interface.end_app
       when /dance/i
         counter = 0
         while counter < 20
