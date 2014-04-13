@@ -4,7 +4,7 @@ require 'sqlite3'
 require 'faker'
 require 'open-uri'
 #Globals
-$db = SQLite3::Database.open "suggest.db"
+$db = SQLite3::Database.open "destination_suggester.db"
 
 #Yelp Setup
 
