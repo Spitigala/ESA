@@ -10,14 +10,20 @@ $db = SQLite3::Database.open "suggest.db"
 
 def get_google_places
   places_key = "AIzaSyCJ3E7eEVg63hGSyKwdo8vr_-SUt_ySpLA"
-  dbc_longlat = "40.7061,-74.0089"
-  places_query = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{dbc_longlat}&radius=2000&types=food&sensor=false&key=#{places_key}"
+  beg_uri = "/maps/api/place/nearbysearch/json?"
+  longlat = "location=40.7061,-74.0089"
+  area = "&radius=500"
+  type = "&types=food"
+  api_host = "https://maps.googleapis.com"
+  end_uri = "&sensor=false&key=#{places_key}"
+  places_query = api_host + beg_uri + longlat + area + type + end_uri
   uri = URI.parse(places_query)
   json = uri.open.read
   parsed_json = JSON.parse(json)
   puts parsed_json["results"][0]["name"]
   parsed_json["results"].each do |place|
   puts place["name"], place["vicinity"]
+  #need to add "next_page_token" functionality
 end
 end
 
@@ -36,12 +42,12 @@ def populate_places
   json =  access_token.get(path).body
   obj = JSON.parse(json)
   obj["businesses"].each do |place|
-    newobj = { name: place["name"],
-               address: place["location"]["display_address"].join(" "),
-               category: rand(2) }
+    newobj = { name:      place["name"],
+               address:   place["location"]["display_address"].join(" "),
+               category:  rand(2) }
     place_insert_prepared = $db.prepare("
-                              INSERT INTO places (name, address, category_id )
-                              VALUES (:name, :address, :category)")
+                          INSERT INTO places (name, address, category_id )
+                          VALUES (:name, :address, :category)")
     place_insert_prepared.execute(newobj)
   end #each
 end #populate
